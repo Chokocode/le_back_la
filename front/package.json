@@ -9,6 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@nestjs/serve-static": "^5.0.4",
     "axios": "^1.13.2",
     "vue": "^3.5.24"
   },
