@@ -15,7 +15,7 @@ import { RwModule } from './modules/RW/rw.module';
     BddModule,
     RwModule,
     ServeStaticModule.forRoot({
-      rootPath: join(__dirname, '..', 'front', 'dist'),
+      rootPath: join(__dirname, '..', '..', 'front', 'dist'),
       exclude: ['/api*'],
     }),
   ],
