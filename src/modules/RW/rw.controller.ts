@@ -16,6 +16,7 @@ import { IsNotEmpty, IsString, MaxLength } from 'class-validator';
 import { ApiKeyProtected } from '../auth/api-key.decorator';
 import { NigendGetProtected } from '../auth/nigend-get.decorator';
 
+
 export class CreateDto {
   @IsString()
   @IsNotEmpty()
@@ -71,4 +72,23 @@ export class RwController {
   delete(@Param('key', ParseIntPipe) key: number): { deleted: boolean } {
     return this.rwService.delete(key);
   }
+
+  // ===== ref_gendarme =====
+
+  // READ -> NIGEND (ref_gendarme)
+  @NigendGetProtected()
+  @Get('ref_gendarme')
+  listGendarmes() {
+    return this.rwService.listGendarmes();
+  }
+
+  // WRITE -> API KEY
+  @ApiKeyProtected()
+  @Post('ref_gendarme')
+  createGendarme(
+    @Body() body: { nigend: number; nom: string },
+  ) {
+    return this.rwService.insertGendarme(body.nigend, body.nom);
+  }
+  
 }

@@ -1,6 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { DatabaseSync } from 'node:sqlite';
 import { BddService } from '../BDD/bdd.service';
+import type { User } from '../auth/user.model';
 
 export type DataRow = {
   key: number;
@@ -12,7 +13,8 @@ export class RwService {
   private readonly db: DatabaseSync;
   private readonly logger = new Logger(RwService.name);
 
-  constructor(bddService: BddService) {
+  // ✅ on garde une référence au service BDD (sinon bddService n'existe pas)
+  constructor(private readonly bddService: BddService) {
     this.db = bddService.getBdd();
   }
 
@@ -29,11 +31,15 @@ export class RwService {
   }
 
   upsert(key: number, value: string): DataRow {
-    this.db.prepare(`
+    this.db
+      .prepare(
+        `
       INSERT INTO data (key, value)
       VALUES (?, ?)
       ON CONFLICT(key) DO UPDATE SET value = excluded.value
-    `).run(key, value);
+    `,
+      )
+      .run(key, value);
 
     return { key, value };
   }
@@ -63,5 +69,23 @@ export class RwService {
         : result.changes;
 
     return { deleted: changes > 0 };
+  }
+
+  // ===== ref_gendarme =====
+
+  listGendarmes(): User[] {
+    return this.bddService.listGendarmes();
+  }
+
+  insertGendarme(nigend: number, nom: string): User {
+    return this.bddService.insertGendarme(nigend, nom);
+  }
+
+  updateGendarme(nigend: number, nom: string): User | null {
+    return this.bddService.updateGendarme(nigend, nom);
+  }
+
+  deleteGendarme(nigend: number): { deleted: boolean } {
+    return this.bddService.deleteGendarme(nigend);
   }
 }
